@@ -11,27 +11,16 @@ type WorkLog = {
 
 export default function DashboardPage() {
   const [logs, setLogs] = useState<WorkLog[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   async function loadTodayLogs() {
     try {
-      const now = new Date();
-      const data = await apiFetch(
-        `/api/reports/monthly?year=${now.getFullYear()}&month=${
-          now.getMonth() + 1
-        }`
-      );
-
-      const today = now.toISOString().split("T")[0];
-      const todayLogs = data.days?.find((d: any) => d.date === today);
-
-      // logs detalhados não vêm no relatório,
-      // então mantemos apenas estado simples aqui
-      setLogs(todayLogs?.logs || []);
+      const data = await apiFetch<WorkLog[]>("/api/worklog/today");
+      setLogs(data);
     } catch {
-      // silêncio aqui, não é crítico
+      // dashboard pode falhar silenciosamente
     }
   }
 
@@ -47,11 +36,15 @@ export default function DashboardPage() {
     setMessage("");
 
     try {
-      await apiFetch("/api/worklog/start", { method: "POST" });
+      await apiFetch<void>("/api/worklog/start", { method: "POST" });
       setMessage("Entrada registrada com sucesso");
       await loadTodayLogs();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Erro inesperado");
+      }
     } finally {
       setLoading(false);
     }
@@ -63,11 +56,15 @@ export default function DashboardPage() {
     setMessage("");
 
     try {
-      await apiFetch("/api/worklog/end", { method: "POST" });
+      await apiFetch<void>("/api/worklog/end", { method: "POST" });
       setMessage("Saída registrada com sucesso");
       await loadTodayLogs();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Erro inesperado");
+      }
     } finally {
       setLoading(false);
     }

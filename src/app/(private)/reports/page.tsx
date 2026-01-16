@@ -27,13 +27,17 @@ export default function ReportsPage() {
     setError("");
 
     try {
-      const data = await apiFetch(
+      const data = await apiFetch<MonthReport>(
         `/api/reports/monthly?year=${year}&month=${month}`
       );
+
       setReport(data);
-    } catch (err: any) {
-      setError(err.message || "Erro ao carregar relatório");
-      setReport(null);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Erro ao carregar relatório");
+      }
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,9 @@
 import { getToken } from "@/lib/auth-client";
 
-export async function apiFetch(url: string, options: RequestInit = {}) {
+export async function apiFetch<T>(
+  url: string,
+  options: RequestInit = {}
+): Promise<T> {
   const token = getToken();
 
   const res = await fetch(url, {
@@ -18,5 +21,5 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
     throw new Error(data?.error || "Erro inesperado");
   }
 
-  return data;
+  return data as T;
 }
