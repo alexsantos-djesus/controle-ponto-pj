@@ -16,11 +16,11 @@ type MonthReport = {
 export default function ReportsPage() {
   const now = new Date();
 
-  const [month, setMonth] = useState(now.getMonth() + 1);
-  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState<number>(now.getMonth() + 1);
+  const [year, setYear] = useState<number>(now.getFullYear());
   const [report, setReport] = useState<MonthReport | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
   async function loadReport() {
     setLoading(true);
@@ -32,7 +32,7 @@ export default function ReportsPage() {
       );
       setReport(data);
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Erro ao carregar relatório");
       setReport(null);
     } finally {
       setLoading(false);
@@ -41,13 +41,14 @@ export default function ReportsPage() {
 
   useEffect(() => {
     loadReport();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [month, year]);
 
   return (
     <div>
       <h1>Relatório Mensal</h1>
 
-      {/* Seleção de mês */}
+      {/* Seleção de mês/ano */}
       <div style={{ marginBottom: 16 }}>
         <select
           value={month}
@@ -64,8 +65,23 @@ export default function ReportsPage() {
           type="number"
           value={year}
           onChange={(e) => setYear(Number(e.target.value))}
-          style={{ marginLeft: 8 }}
+          style={{ marginLeft: 8, width: 80 }}
         />
+
+        {/* Exportação */}
+        <a
+          href={`/api/reports/monthly/excel?year=${year}&month=${month}`}
+          style={{ marginLeft: 16 }}
+        >
+          Exportar Excel
+        </a>
+
+        <a
+          href={`/api/reports/monthly/word?year=${year}&month=${month}`}
+          style={{ marginLeft: 8 }}
+        >
+          Exportar Word
+        </a>
       </div>
 
       {/* Estados */}
@@ -83,6 +99,14 @@ export default function ReportsPage() {
               </tr>
             </thead>
             <tbody>
+              {report.days.length === 0 && (
+                <tr>
+                  <td colSpan={2} style={{ textAlign: "center" }}>
+                    Nenhum registro no mês
+                  </td>
+                </tr>
+              )}
+
               {report.days.map((day) => (
                 <tr key={day.date}>
                   <td>{day.date}</td>
