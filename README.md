@@ -1,36 +1,107 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Controle de Ponto
 
-## Getting Started
+Sistema de **controle de ponto** desenvolvido com **Next.js**, **Prisma** e **PostgreSQL**, permitindo registrar entradas e saídas, visualizar horas trabalhadas e gerar relatórios profissionais em **Excel** e **Word**.
 
-First, run the development server:
+---
 
+## ✨ Funcionalidades
+
+- Registro de **entrada** e **saída**
+- Cálculo automático de **horas trabalhadas**
+- Relógio em tempo real (Horário de Brasília)
+- Relatórios mensais:
+  - 📊 **Excel**
+  - 📝 **Word**
+- Filtro por **mês, ano e dia**
+- Total de horas exibido em **horas + minutos**
+- Interface moderna (Dark Mode)
+
+---
+
+## 🛠️ Tecnologias
+
+- **Next.js 14 (App Router)**
+- **TypeScript**
+- **Prisma ORM**
+- **PostgreSQL (NeonDB)**
+- **Tailwind CSS**
+- **ExcelJS**
+- **docx**
+- **Vercel (Deploy)**
+
+---
+
+## ⚙️ Configuração do Ambiente
+
+### 1. Instale as dependências
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configure as variáveis de ambiente
+Crie um arquivo `.env`:
+```env
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> ⚠️ Prisma 7.x — seguir **estritamente** a documentação oficial.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Rodar migrations
+```bash
+npx prisma migrate deploy
+```
 
-## Learn More
+### 4. Iniciar o projeto
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📁 Estrutura Principal
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+ ├─ app/
+ │   ├─ dashboard/
+ │   ├─ reports/
+ │   └─ api/
+ ├─ lib/
+ │   ├─ prisma.ts
+ │   ├─ auth.ts
+ │   └─ time-calculator.ts
+ └─ styles/
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📊 Relatórios
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Nome dos arquivos:
+  - **Relatório de Janeiro de 2026.xlsx**
+  - **Relatório de Janeiro de 2026.docx**
+- Totais exibidos em **HH:mm** (ex: 01h 56m)
+
+---
+
+## 🚀 Deploy
+
+- **Frontend:** Vercel
+- **Database:** NeonDB
+
+Após configurar as variáveis no painel da Vercel, basta clicar em **Deploy**.
+
+---
+
+## ✅ Status do Projeto
+
+✔ Regras de negócio revisadas  
+✔ UI refinada  
+✔ Fluxo completo testado  
+✔ Pronto para produção  
+
+---
+
+## 👨‍💻 Autor
+
+Projeto desenvolvido para fins profissionais e estudo avançado de stack moderna.
