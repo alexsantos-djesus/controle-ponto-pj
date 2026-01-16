@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -25,8 +26,9 @@ export default function RegisterPage() {
       body: JSON.stringify({ name, email, password }),
     });
 
+    const data = await res.json();
+
     if (!res.ok) {
-      const data = await res.json();
       setError(data.error || "Erro ao cadastrar");
       return;
     }
@@ -35,31 +37,59 @@ export default function RegisterPage() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h1>Cadastro</h1>
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-sm rounded-xl bg-white dark:bg-zinc-900 p-6 shadow"
+      >
+        <h1 className="mb-6 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+          Criar cadastro
+        </h1>
 
-      <input
-        placeholder="Nome"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+        <input
+          type="text"
+          placeholder="Nome"
+          className="mb-3 w-full rounded border border-zinc-300 dark:border-zinc-700 bg-transparent p-2 text-zinc-900 dark:text-zinc-50"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
 
-      <input
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+        <input
+          type="email"
+          placeholder="Email"
+          className="mb-3 w-full rounded border border-zinc-300 dark:border-zinc-700 bg-transparent p-2 text-zinc-900 dark:text-zinc-50"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-      <input
-        type="password"
-        placeholder="Senha"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <input
+          type="password"
+          placeholder="Senha"
+          className="mb-4 w-full rounded border border-zinc-300 dark:border-zinc-700 bg-transparent p-2 text-zinc-900 dark:text-zinc-50"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-      {error && <p>{error}</p>}
+        {error && <p className="mb-3 text-sm text-red-500">{error}</p>}
 
-      <button type="submit">Cadastrar</button>
-    </form>
+        <button
+          type="submit"
+          className="w-full rounded bg-zinc-900 dark:bg-zinc-50 px-4 py-2 font-medium text-white dark:text-black"
+        >
+          Cadastrar
+        </button>
+
+        {/* Link para login */}
+        <p className="mt-4 text-center text-sm text-zinc-600 dark:text-zinc-400">
+          Já tem conta?{" "}
+          <Link
+            href="/login"
+            className="font-medium text-zinc-900 dark:text-zinc-50 underline"
+          >
+            Fazer login
+          </Link>
+        </p>
+      </form>
+    </div>
   );
 }
