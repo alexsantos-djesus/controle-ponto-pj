@@ -18,7 +18,7 @@ export async function POST(req: Request) {
       where: { email },
     });
 
-    // 🔒 Segurança: resposta genérica
+    // 🔒 Resposta genérica (segurança)
     if (!user) {
       return NextResponse.json({
         message:
@@ -26,18 +26,17 @@ export async function POST(req: Request) {
       });
     }
 
-    // 🔑 Gerar token seguro
+    // 🔑 Token seguro
     const token = crypto.randomBytes(32).toString("hex");
 
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 1); // 1 hora
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1h
 
     // 🔥 Remove tokens antigos
     await prisma.passwordResetToken.deleteMany({
       where: { userId: user.id },
     });
 
-    // 💾 Salva novo token
+    // 💾 Cria novo token
     await prisma.passwordResetToken.create({
       data: {
         token,
@@ -46,10 +45,9 @@ export async function POST(req: Request) {
       },
     });
 
-    // 🔗 Link de redefinição
     const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${token}`;
 
-    // 📧 AQUI É O PONTO QUE VOCÊ PERGUNTOU
+    // 📧 ENVIO REAL
     await sendResetPasswordEmail(user.email, resetLink);
 
     return NextResponse.json({

@@ -22,17 +22,27 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      // FUTURO: endpoint real
-      // await fetch("/api/auth/forgot-password", { ... })
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
 
-      // Simulação por enquanto
-      await new Promise((r) => setTimeout(r, 800));
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Erro ao enviar e-mail");
+      }
 
       setSuccess(
         "Se este e-mail estiver cadastrado, enviaremos instruções para redefinir sua senha."
       );
-    } catch {
-      setError("Erro ao solicitar redefinição de senha");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erro ao solicitar redefinição de senha"
+      );
     } finally {
       setLoading(false);
     }
