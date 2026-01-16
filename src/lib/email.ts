@@ -1,18 +1,18 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT),
+  secure: Number(process.env.SMTP_PORT) === 465,
   auth: {
-    user: process.env.GMAIL_USER!,
-    pass: process.env.GMAIL_APP_PASSWORD!, // senha de app
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
   },
 });
 
 export async function sendResetPasswordEmail(email: string, resetLink: string) {
   await transporter.sendMail({
-    from: `"Controle de Ponto" <${process.env.GMAIL_USER}>`,
+    from: `"Controle de Ponto" <${process.env.SMTP_USER}>`,
     to: email,
     subject: "Redefinição de senha",
     html: `
