@@ -1,4 +1,3 @@
-// src/lib/prisma.ts
 import { PrismaClient } from "@prisma/client";
 import { PrismaNeon } from "@prisma/adapter-neon";
 
@@ -9,3 +8,6 @@ const adapter = new PrismaNeon({
 export const prisma = new PrismaClient({
   adapter,
 });
+
+export type Prisma = typeof prisma;
+export default prisma;
