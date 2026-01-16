@@ -1,0 +1,66 @@
+import { NextResponse } from "next/server";
+import crypto from "crypto";
+import { prisma } from "@/lib/prisma";
+import { sendResetPasswordEmail } from "@/lib/email";
+
+export async function POST(req: Request) {
+  try {
+    const { email } = await req.json();
+
+    if (!email) {
+      return NextResponse.json(
+        { error: "E-mail é obrigatório" },
+        { status: 400 }
+      );
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    // 🔒 Segurança: resposta genérica
+    if (!user) {
+      return NextResponse.json({
+        message:
+          "Se este e-mail estiver cadastrado, enviaremos instruções para redefinir a senha.",
+      });
+    }
+
+    // 🔑 Gerar token seguro
+    const token = crypto.randomBytes(32).toString("hex");
+
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1); // 1 hora
+
+    // 🔥 Remove tokens antigos
+    await prisma.passwordResetToken.deleteMany({
+      where: { userId: user.id },
+    });
+
+    // 💾 Salva novo token
+    await prisma.passwordResetToken.create({
+      data: {
+        token,
+        userId: user.id,
+        expiresAt,
+      },
+    });
+
+    // 🔗 Link de redefinição
+    const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${token}`;
+
+    // 📧 AQUI É O PONTO QUE VOCÊ PERGUNTOU
+    await sendResetPasswordEmail(user.email, resetLink);
+
+    return NextResponse.json({
+      message:
+        "Se este e-mail estiver cadastrado, enviaremos instruções para redefinir a senha.",
+    });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    return NextResponse.json(
+      { error: "Erro interno do servidor" },
+      { status: 500 }
+    );
+  }
+}
